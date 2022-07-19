@@ -1,5 +1,5 @@
 {
-  "name": "tdengine-vs-code-extension",
+	"name": "tdengine-vs-code-extension",
 	"displayName": "TDengine-VS-Code-Extension",
 	"description": "TDengine Visual Studio Code Extension",
 	"version": "0.0.1",
@@ -10,7 +10,9 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:tdengine-vs-code-extension.helloWorld"
+		"onCommand:tdengine-vs-code-extension.helloWorld",
+		"onCommand:tdengine-vs-code-extension.helloCommand",
+		"onCommand:tdengine-vs-code-extension.showWebview"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -18,6 +20,14 @@
 			{
 				"command": "tdengine-vs-code-extension.helloWorld",
 				"title": "Hello World"
+			},{
+				"command": "tdengine-vs-code-extension.helloCommand",
+				"category": "my-extension",
+				"title": "Hello User"
+			},{
+				"command": "tdengine-vs-code-extension.showWebview",
+				"category": "my-extension",
+				"title": "show webview"
 			}
 		]
 	},

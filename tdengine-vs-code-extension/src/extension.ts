@@ -1,49 +1,45 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// const cats = {
-// 	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-// 	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif'
-//   };
-
 import {getWebviewContent} from './view/webview/webview';
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
+import {Dependency, TreeView} from './view/treeview/treeview';
+import {getLoginWebview} from './view/login/login';
+import { resolve } from 'path';
+
+export function activate(context: vscode.ExtensionContext) {	
 	console.log('Congratulations, your extension "tdengine-vs-code-extension" is now active!');
+	context.workspaceState.update('answer','No');
+	context.workspaceState.update('tableID','00001');
+	context.workspaceState.update('userID',-1);
+	
+	const nodeDependenciesProvider = new TreeView(context,"rootPath");	
+	vscode.window.registerTreeDataProvider('databaseView', nodeDependenciesProvider);
+	
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	// let disposable = vscode.commands.registerCommand('tdengine-vs-code-extension.helloWorld', () => {
-	// 	// The code you place here will be executed every time your command is executed
-	// 	// Display a message box to the user
-	// 	vscode.window.showInformationMessage('Hello World from TDengine-VS-Code-Extension!');
-	// });
-
-	let disposable2 = vscode.commands.registerCommand('tdengine-vs-code-extension.helloCommand', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello Command',"1","2");
+	let disposable2 = vscode.commands.registerCommand('tdengine-vs-code-extension.helloCommand', async () => {
+		const  answer = await vscode.window.showInformationMessage('Log in?',"Yes","No");
+		if(answer === 'Yes' ){
+			context.workspaceState.update('answer',answer);
+			// const baseid = await
+			vscode.commands.executeCommand('tdengine-vs-code-extension.loginStart');
+			nodeDependenciesProvider.refresh();	
+		}		
 	});
+	context.subscriptions.push(disposable2);
 
-	let disposable3 = vscode.commands.registerCommand('tdengine-vs-code-extension.showWebview',() =>{
+	let disposable3 = vscode.commands.registerCommand('tdengine-vs-code-extension.showWebview',(node: Dependency) =>{
 		const panel = vscode.window.createWebviewPanel(
         'catCoding', // Identifies the type of the webview. Used internally
 			'Table Showing', // Title of the panel displayed to the user
 			vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 			{} // Webview options. More on these later.
 		);
-
+		vscode.window.showInformationMessage(`Successfully called edit entry on ${node.label}.`);
 		let iteration = 0;
       	const updateWebview = () => {
         const cat = iteration++ % 2 ? 'Compiling Cat' : 'Coding Cat';
         panel.title = "webview";
-        panel.webview.html = getWebviewContent(cat,iteration);
+		const info = node.label;
+        panel.webview.html = getWebviewContent(cat,iteration,info);
       };
 
       // Set initial content
@@ -52,9 +48,40 @@ export function activate(context: vscode.ExtensionContext) {
       // And schedule updates to the content every second
       setInterval(updateWebview, 1000);
 	});
+	context.subscriptions.push(disposable3);
 
-	context.subscriptions.push(disposable2);
-}
+	let disposable4 = vscode.commands.registerCommand('tdengine-vs-code-extension.loginStart', () => {
+		const panel = vscode.window.createWebviewPanel(
+			'catCoding',
+			'Cat Coding',
+			vscode.ViewColumn.One,
+			{
+			  enableScripts: true
+			}
+		  );
+	
+		  panel.webview.html = getLoginWebview(context);
+		 
+	
+		  // Handle messages from the webview
+		  panel.webview.onDidReceiveMessage(
+			async (message) => {
+			  switch (message.command) {
+				case 'alert':				  
+				  await new Promise(resolve =>setTimeout(resolve,1000));
+				  vscode.window.showErrorMessage(message.textttt);
+				  if(message.textttt ==='Try submit 1 times'){
+					panel.dispose();
+				  }
+				  return;
+			  }
+			},
+			undefined,
+			context.subscriptions
+		  );
+	  });
+	  context.subscriptions.push(disposable4);
+	}
 // function getWebviewContent(cat: keyof typeof cats) {
 // 	return `<!DOCTYPE html>
 //   <html lang="en">

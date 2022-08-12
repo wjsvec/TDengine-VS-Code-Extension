@@ -4,7 +4,7 @@ const cats = {
 	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif'
   };
 
-export function getWebviewContent(cat: keyof typeof cats,iteration: number) {
+export function getWebviewContent(cat: keyof typeof cats,iteration: number,databaseInfo:string) {
     var multi:number[][] = [[1,2,3],[23,24,25]];
     const tab = showTable();
     var table_arr : string = '';
@@ -27,6 +27,7 @@ export function getWebviewContent(cat: keyof typeof cats,iteration: number) {
   <body>
 	<h1>我的第一个HTML页面</h1>
 	<p>我的第一个段落。</p>
+  <p>${databaseInfo}</p>
     <table border="1">
     <tr>
         <td>${multi[0][0]}</td>

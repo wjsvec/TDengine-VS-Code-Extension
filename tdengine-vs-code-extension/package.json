@@ -1,5 +1,5 @@
 {
-  "name": "tdengine-vs-code-extension",
+	"name": "tdengine-vs-code-extension",
 	"displayName": "TDengine-VS-Code-Extension",
 	"description": "TDengine Visual Studio Code Extension",
 	"version": "0.0.1",
@@ -10,7 +10,11 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:tdengine-vs-code-extension.helloWorld"
+		"onView:databaseView",
+		"onCommand:tdengine-vs-code-extension.helloWorld",
+		"onCommand:tdengine-vs-code-extension.helloCommand",
+		"onCommand:tdengine-vs-code-extension.showWebview",
+		"onCommand:tdengine-vs-code-extension.loginStart"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -18,8 +22,82 @@
 			{
 				"command": "tdengine-vs-code-extension.helloWorld",
 				"title": "Hello World"
+			},{
+				"command": "tdengine-vs-code-extension.helloCommand",
+				"category": "my-extension",
+				"title": "Hello User"
+			},{
+				"command": "tdengine-vs-code-extension.showWebview",
+				"category": "my-extension",
+				"title": "show webview",
+				"icon": {
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
+				}
+			},{
+				"command": "databaseView.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+				  "light": "resources/light/refresh.svg",
+				  "dark": "resources/dark/refresh.svg"
+				}
+			},{
+				"command": "databaseView.openWebview",
+				"title": "Open",
+				"icon": {
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
+				}
+			},{
+				"command": "tdengine-vs-code-extension.loginStart",
+				"title": "Login",
+				"category": "my-extension"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+			  {
+				"id": "database-explorer",
+				"title": "Database Explorer",
+				"icon": "resources/dep.svg"
+			  }
+			]
+		  },
+		  "views": {
+			"database-explorer": [
+			  {
+				"id": "databaseView",
+				"name": "Database View",
+				"icon": "resources/dep.svg",
+				"contextualTitle": "Database Explorer"
+			  }
+			]
+		  },
+		  "viewsWelcome": [
+			{
+			  "view": "databaseView",
+			  
+			  "contents": "Find document in [learn more](https://github.com/wjsvec/TDengine-VS-Code-Extension).\n[login](command:tdengine-vs-code-extension.helloCommand)"
+			}
+		  ],
+		  "menus": {
+			"view/title": [
+			  {
+				"command": "databaseView.refreshEntry",
+				"when": "view == databaseView",
+				"group": "navigation"
+			  }
+			],
+			"view/item/context": [
+				{
+					"command": "tdengine-vs-code-extension.showWebview",
+					"when": "view == databaseView && viewItem == 1",
+					"group": "inline"
+					
+				  }
+			]
+		  }
+		  
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
